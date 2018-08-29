@@ -1,4 +1,5 @@
-var express = require('express'),
+var
+  express = require('express'),
   app = express(),
   crud = require('./lib/crud'),
   routes = require('./lib/routes'),
@@ -7,6 +8,7 @@ var express = require('express'),
 handlebarsInit(app)
 
 app.use(express.static(__dirname + '/public'))
+app.use(require('body-parser').urlencoded({extended: true}))
 
 routes.configRoutes(app)
 

@@ -1,0 +1,77 @@
+{{#section 'head'}}
+  <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.3.0/handlebars.min.js">
+  </script>
+
+  <script id="booksTemplate" type="text/x-handlebars-template">
+      \{{#each books}}
+        <div class="editor-content-item">
+          <div class="row">
+            <div class="col-lg-12">
+              <h1>\{{title}}</h1>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-2">
+              <img src="\{{imgLink}}"/>
+            </div>
+            <div class="col-lg-10">
+              <div><span><b>Author:</b></span>\{{author}}</div>
+              <div><span><b>Description:</b></span>\{{description}}</div>
+              <div class="books-cpanel">
+                <button type="button" class="btn btn-outline-primary btn-sm editor-change-item"
+                        data-item-title="\{{title}}"
+                        data-item-author="\{{author}}"
+                        data-item-price="\{{price}}"
+                        data-item-imgLink="\{{imgLink}}"
+                        data-item-description="\{{description}}"
+                        data-item-id="\{{_id}}",
+                        data-action="/books/update/\{{_id}}">change
+                </button>
+                <button type="button" class="btn btn-outline-danger btn-sm editor-delete-item" data-item-id="\{{_id}}">delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      \{{/each}}
+  </script>
+
+  <script id="formAddTemplate" type="text/x-handlebars-template">
+    <form action="\{{route}}" method="POST" id="editor-form">
+      <div class="form-group">
+        <label for="exampleInputTitle1">Title</label>
+        <input type="text" class="form-control" id="exampleInputTitle1" aria-describedby="emailHelp" placeholder="Enter title book's" name="title" value="\{{title}}">
+        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+      </div>
+      <div class="form-group">
+        <label for="exampleInputAuthor1">Author</label>
+        <input type="text" class="form-control" id="exampleInputAuthor1" placeholder="Enter author" name="author" value="\{{author}}">
+      </div>
+      <div class="form-group">
+        <label for="exampleInputPrice1">Price</label>
+        <input type="text" class="form-control" id="exampleInputPrice1" placeholder="Enter price" name="price" value="\{{price}}">
+      </div>
+      <div class="form-group">
+        <label for="exampleInputImg1">Refferer on image</label>
+        <input type="text" class="form-control" id="exampleInputImg1" placeholder="Enter link" name="imgLink" value="\{{imgLink}}">
+      </div>
+      <div class="form-group">
+        <label for="exampleFormControlTextarea1">Description</label>
+        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name="description">\{{description}}</textarea>
+      </div>
+      <button type="submit" class="btn btn-primary" id="editor-submit">Submit</button>
+    </form>
+  </script>
+
+  <script src="/js/editor.js"></script>
+{{/section}}
+
+<div class="row editor">
+  <div class="col-lg-2 col-sm-12">
+    <div class="editor-command" id="get-list">Get list</div>
+    <div class="editor-command" id="add-book" data-action="/books/insert">Add book</div>
+  </div>
+  <div class="col-lg-10 col-sm-12">
+    <div id="editor-content">
+    </div>
+  </div>
+</div>

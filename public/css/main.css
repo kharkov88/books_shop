@@ -1,0 +1,25 @@
+.loader {
+  text-align: center;
+}
+.footer {
+  margin-top: 10px;
+  height: 40px;
+  background-color: #f8f9fa;
+}
+.editor-command {
+  height: 40px;
+  background-color: #f8f9fa;
+  margin: 2px;
+  padding-left: 22px;
+  padding-top: 6px;
+}
+.editor-command:hover {
+  cursor: pointer;
+  background-color: #fff;
+}
+#editor-content {
+  padding-top: 8px;
+}
+.books-cpanel {
+  text-align: right;
+}
