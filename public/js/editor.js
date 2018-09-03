@@ -1,65 +1,151 @@
 window.onload = function () {
   var
+    state = {
+      modalRequest: $('#modalRequest'),
+      modalDeleteItem: $('#modalDeleteItem'),
+      editorContent: $('#editor-content')[0],
+      insert: '/books/insert',
+      update: '/books/update/',
+      read: '/books/list',
+      destroy: '/books/delete/',
+      loader: '<div class="preloader"><img src="/img/loading.gif"/></div>'
+    },
     booksListTemplate = Handlebars.compile(document.querySelector('#booksTemplate').innerHTML),
-    formAddTemplate = Handlebars.compile(document.querySelector('#formAddTemplate').innerHTML),
-    btnAdd = document.querySelector('#add-book'),
-    btnGetList = document.querySelector('#get-list')
+    formTemplate = Handlebars.compile(document.querySelector('#formAddTemplate').innerHTML)
 
-  function getList () {
-    var url = '/books/list'
-    document.querySelector('#editor-content').innerHTML = "<img src='\/img/loading.gif'/>"
-    fetch(url)
-      .then(response => response.json())
-      .then(obj => createList(obj))
-      .then(() => initControls())
+  var ctrlRead = {
+    element: document.querySelector('#get-list'),
+    init: function () {
+      this.element.onclick = mediator.read
+    }
   }
 
-  function createList (arr) {
-    document.querySelector('#editor-content').innerHTML = booksListTemplate({
-      books: arr
-    })
+  var ctrlAddBook = {
+    element: document.querySelector('#add-book'),
+    init: function () {
+      this.element.onclick = mediator.getContentForFormInsert
+    }
   }
 
-  function initControls () {
-    var
-      items = document.querySelectorAll('.editor-content-item'),
-      btnsDeleteItem = document.querySelectorAll('.editor-delete-item'),
-      btnsChangeItem = document.querySelectorAll('.editor-change-item')
-
-    btnsChangeItem.forEach(function (item, i) {
-      item.addEventListener('click', function () {
-        var context = {
-          title: this.dataset.itemTitle,
-          author: this.dataset.itemAuthor,
-          price: this.dataset.itemPrice,
-          imgLink: this.dataset.itemImglink,
-          description: this.dataset.itemDescription,
-          route: this.dataset.action
-        }
-        generateForm(context)
+  var ctrlUpdate = {
+    elements: [],
+    init: function () {
+      this.elements = document.querySelectorAll('.editor-change-item')
+      this.elements.forEach(function (item) {
+        item.onclick = mediator.getContentForFormUpdate.bind(item)
       })
-    })
+    }
+  }
 
-    btnsDeleteItem.forEach(function (item, i) {
-      item.parent = items[i]
-      item.addEventListener('click', function () {
-        var id = this.dataset.itemId
-        var url = '/books/delete/' + id
-        fetch(url, {
-          method: 'DELETE'
+  var ctrlDelete = {
+    elements: [],
+    init: function () {
+      this.elements = document.querySelectorAll('.editor-delete-item')
+      this.elements.forEach(function (item) {
+        item.onclick = mediator.handleDelete.bind(item)
+      })
+    }
+  }
+
+  var content = {
+    element: state.editorContent,
+
+    createContent: function (content, callback) {
+      callback = callback || (() => {})
+      this.element.innerHTML = content
+      callback()
+    }
+  }
+  var modalDeleteItem = {
+    element: document.querySelector('#btn-yes'),
+    init: function () {
+      modalDeleteItem.element.onclick = () => {
+        state.modalDeleteItem.modal('toggle')
+        mediator.destroy.call(this)
+      }
+    }
+  }
+  var request = {
+    read: function () {
+      mediator.startRequest()
+
+      fetch(state.read)
+        .then(response => response.json())
+        .then(obj => {
+          state.list = obj
+          mediator.getContentForList(obj)
         })
-          .then(() => { this.parent.parentElement.removeChild(this.parent) })
+        .then(() => setTimeout(() => { mediator.endRequest() }, 300))
+    },
+    destroy: function () {
+      var id = this.dataset.itemId
+      var csrf = this.dataset.csrf
+
+      fetch(state.destroy + id, {
+        method: 'DELETE',
+        headers: {
+          'Content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        },
+        body: '_csrf=' + csrf
       })
-    })
+        .then(() => {
+          // this.parent.parentElement.removeChild(this.parent)
+          mediator.read()
+        })
+    }
   }
 
-  function generateForm (context) {
-    console.log('context:', context)
-    document.querySelector('#editor-content').innerHTML = formAddTemplate(context)
+  var mediator = {
+    read: function () {
+      request.read()
+    },
+    handleDelete: function () {
+      state.modalDeleteItem.modal('toggle')
+      modalDeleteItem.init.call(this)
+    },
+    destroy: function () {
+      console.log(this)
+      request.destroy.call(this)
+    },
+    getContentForList: function (obj) {
+      content.createContent(booksListTemplate({books: obj}), () => {
+        ctrlUpdate.init()
+        ctrlDelete.init()
+      })
+    },
+    getContentForFormInsert: function (obj) {
+      content.createContent(formTemplate({route: state.insert}), () => {
+      })
+    },
+    getContentForFormUpdate: function () {
+      var id = this.dataset.itemId
+      var item = state.list.filter(item => item._id === id)[0]
+      console.log(item)
+      var context = {
+        title: item.title,
+        author: item.author,
+        price: item.price,
+        imgLink: item.imgLink,
+        description: item.description,
+        route: state.update + id
+      }
+      content.createContent(formTemplate(context), () => {
+      })
+    },
+    startRequest: function () {
+      content.createContent(state.loader)
+      state.modalRequest.modal({backdrop: 'static'})
+    },
+    endRequest: function () {
+      state.modalRequest.modal('toggle')
+    },
+    init: function () {
+      mediator.read()
+      ctrlRead.init()
+      ctrlAddBook.init()
+      modalDeleteItem.init()
+    }
   }
 
-  // ------init module
-  getList()
-  btnAdd.addEventListener('click', () => generateForm({route: 'books/insert'}))
-  btnGetList.addEventListener('click', getList)
+  mediator.init()
 }

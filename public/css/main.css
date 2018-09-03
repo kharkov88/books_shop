@@ -1,6 +1,10 @@
 .loader {
   text-align: center;
 }
+.preloader {
+  width: 50px;
+  margin: 0 auto 0 auto;
+}
 .footer {
   margin-top: 10px;
   height: 40px;
@@ -23,3 +27,17 @@
 .books-cpanel {
   text-align: right;
 }
+
+#main-basket {
+  position: absolute;
+  top: 0;
+  right: 0;
+  border: 1px solid blue;
+  border-radius: 5px;
+  width: 80px;
+  height: 40px;
+  text-align: center;
+}
+.hover {
+  background-color: #007bff;
+ }

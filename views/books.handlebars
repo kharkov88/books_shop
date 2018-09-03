@@ -15,7 +15,7 @@
             <div class="col-lg-10">
               <div><span><b>Author:</b></span>\{{author}}</div>
               <div><span><b>Description:</b></span>\{{description}}</div>
-              <button type="button" class="btn btn-outline-secondary btn-sm">click</button>
+              <button type="button" id="button-buy" class="btn btn-outline-primary btn-sm" data-id="\{{_id}}">buy</button>
             </div>
           </div>
       \{{/each}}
@@ -23,6 +23,7 @@
   <script src="/js/books.js"></script>
 {{/section}}
 
+<div id="main-basket"></div>
 <div id="books">
   <div class="row">
     <div class="col-lg-12 loader">

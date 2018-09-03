@@ -18,16 +18,8 @@
               <div><span><b>Author:</b></span>\{{author}}</div>
               <div><span><b>Description:</b></span>\{{description}}</div>
               <div class="books-cpanel">
-                <button type="button" class="btn btn-outline-primary btn-sm editor-change-item"
-                        data-item-title="\{{title}}"
-                        data-item-author="\{{author}}"
-                        data-item-price="\{{price}}"
-                        data-item-imgLink="\{{imgLink}}"
-                        data-item-description="\{{description}}"
-                        data-item-id="\{{_id}}",
-                        data-action="/books/update/\{{_id}}">change
-                </button>
-                <button type="button" class="btn btn-outline-danger btn-sm editor-delete-item" data-item-id="\{{_id}}">delete</button>
+                <button type="button" class="btn btn-outline-primary btn-sm editor-change-item" data-item-id="\{{_id}}">change</button>
+                <button type="button" class="btn btn-outline-danger btn-sm editor-delete-item" data-item-id="\{{_id}}" data-csrf="{{_csrfToken}}">delete</button>
               </div>
             </div>
           </div>
@@ -37,6 +29,7 @@
 
   <script id="formAddTemplate" type="text/x-handlebars-template">
     <form action="\{{route}}" method="POST" id="editor-form">
+    <input type="hidden" name="_csrf" value={{_csrfToken}}></input>
       <div class="form-group">
         <label for="exampleInputTitle1">Title</label>
         <input type="text" class="form-control" id="exampleInputTitle1" aria-describedby="emailHelp" placeholder="Enter title book's" name="title" value="\{{title}}">
@@ -66,6 +59,32 @@
 {{/section}}
 
 <div class="row editor">
+
+  <div id="modalRequest" class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+    </div>
+  </div>
+  <div id="modalDeleteItem" class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          Are you shure?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+          <button type="button" class="btn btn-primary" id="btn-yes">Yes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
   <div class="col-lg-2 col-sm-12">
     <div class="editor-command" id="get-list">Get list</div>
     <div class="editor-command" id="add-book" data-action="/books/insert">Add book</div>
